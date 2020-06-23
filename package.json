@@ -5,7 +5,9 @@
 	"main": "server.js",
 	"scripts": {
 		"start": "npm server",
-		"server": "nodemon server"
+		"server": "nodemon server",
+		"client": "npm strat --prefix client",
+		"dev": "concurrently \"npm run server\" \"npm run client\""
 	},
 	"author": "Niha",
 	"license": "MIT",
