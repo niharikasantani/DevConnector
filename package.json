@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "npm server",
 		"server": "nodemon server",
-		"client": "npm strat --prefix client",
+		"client": "npm start --prefix client",
 		"dev": "concurrently \"npm run server\" \"npm run client\""
 	},
 	"author": "Niha",
