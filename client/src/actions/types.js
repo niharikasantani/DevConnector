@@ -13,3 +13,13 @@ export const AUTH_ERROR = 'AUTH_ERROR';
 //login auth
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'LOGIN_FAIL';
+
+//logout
+export const LOGOUT = 'LOGOUT';
+
+//profile
+export const GET_PROFILE = 'GET_PROFILE';
+export const PROFILE_ERROR = 'PROFILE_ERROR';
+
+//clear profile
+export const CLEAR_PROFILE = 'CLEAR_PROFILE';
