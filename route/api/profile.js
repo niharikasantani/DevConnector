@@ -9,6 +9,7 @@ const User = require('../../models/User');
 const request = require('request');
 const config = require('config');
 const axios = require('axios');
+const normalize = require('normalize-url');
 
 // @route   GET api/profile/me
 // @desc    Get current user's profile
@@ -21,12 +22,14 @@ router.get('/me', auth, async (req, res) => {
 		}).populate('user', ['name', 'avatar']);
 
 		if (!profile) {
-			return res.status(400).json({ msg: 'There is no profile for this user' });
+			return res
+				.status(400)
+				.json({ msg: 'There is no profile for this user' });
 		}
 
 		res.json(profile);
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.status(500).send('Server error');
 	}
 });
@@ -66,49 +69,69 @@ router.post(
 		} = req.body;
 
 		// Build profile object
-		const profileFields = {};
-		profileFields.user = req.user.id;
-		if (company) profileFields.company = company;
-		if (website) profileFields.website = website;
-		if (location) profileFields.location = location;
-		if (bio) profileFields.bio = bio;
-		if (status) profileFields.status = status;
-		if (githubusername) profileFields.githubusername = githubusername;
+		// const profileFields = {};
+		// profileFields.user = req.user.id;
+		// if (company) profileFields.company = company;
+		// if (website) profileFields.website = website;
+		// if (location) profileFields.location = location;
+		// if (bio) profileFields.bio = bio;
+		// if (status) profileFields.status = status;
+		// if (githubusername) profileFields.githubusername = githubusername;
 
-		if (skills) {
-			profileFields.skills = skills.split(',').map((skill) => skill.trim());
-		}
+		// if (skills) {
+		// 	Array.isArray(skills)
+		// 		? skills
+		// 		: skills.split(',').map((skill) => ' ' + skill.trim());
+
+		// 	//profileFields.skills = skills.split(',').map((skill) => skill.trim());
+		// }
+
+		const profileFields = {
+			user: req.user.id,
+			company,
+			location,
+			website:
+				website && website !== ''
+					? normalize(website, { forceHttps: true })
+					: '',
+			bio,
+			skills: Array.isArray(skills)
+				? skills
+				: skills.split(',').map((skill) => ' ' + skill.trim()),
+			status,
+			githubusername,
+		};
 
 		//Build social object
 
-		profileFields.social = {};
+		// profileFields.social = {};
 
-		if (youtube) profileFields.social.youtube = youtube;
-		if (twitter) profileFields.social.twitter = twitter;
-		if (facebook) profileFields.social.facebook = facebook;
-		if (linkedin) profileFields.social.linkedin = linkedin;
-		if (instagram) profileFields.social.instagram = instagram;
+		// if (youtube) profileFields.social.youtube = youtube;
+		// if (twitter) profileFields.social.twitter = twitter;
+		// if (facebook) profileFields.social.facebook = facebook;
+		// if (linkedin) profileFields.social.linkedin = linkedin;
+		// if (instagram) profileFields.social.instagram = instagram;
+
+		const socialFields = {
+			youtube,
+			twitter,
+			instagram,
+			linkedin,
+			facebook,
+		};
+		for (const [key, value] of Object.entries(socialFields)) {
+			if (value && value.length > 0)
+				socialFields[key] = normalize(value, { forceHttps: true });
+		}
+		profileFields.social = socialFields;
 
 		try {
-			let profile = await Profile.findOne({ user: req.user.id });
-
-			if (profile) {
-				//update
-				profile = await Profile.findOneAndUpdate(
-					{ user: req.user.id },
-					{ $set: profileFields },
-					{ useFindAndModify: false },
-					{ new: true }
-				);
-
-				return res.json(profile);
-			}
-
-			//create
-
-			profile = new Profile(profileFields);
-
-			await profile.save();
+			let profile = await Profile.findOneAndUpdate(
+				{ user: req.user.id },
+				{ $set: profileFields },
+				{ new: true, upsert: true },
+				{ useFindAndModify: false }
+			);
 
 			res.json(profile);
 		} catch (error) {
@@ -124,7 +147,10 @@ router.post(
 
 router.get('/', async (req, res) => {
 	try {
-		const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+		const profiles = await Profile.find().populate('user', [
+			'name',
+			'avatar',
+		]);
 		res.json(profiles);
 	} catch (error) {
 		console.error(error.message);
@@ -143,14 +169,18 @@ router.get('/user/:user_id', async (req, res) => {
 		}).populate('user', ['name', 'gravatar']);
 
 		if (!profile) {
-			return res.status(400).json({ msg: 'There is no profile for this user' });
+			return res
+				.status(400)
+				.json({ msg: 'There is no profile for this user' });
 		}
 
 		res.json(profile);
 	} catch (error) {
 		console.error(error.message);
 		if (error.kind == 'ObjectId') {
-			return res.status(400).json({ msg: 'There is no profile for this user' });
+			return res
+				.status(400)
+				.json({ msg: 'There is no profile for this user' });
 		}
 		res.status(500).send('server error');
 	}

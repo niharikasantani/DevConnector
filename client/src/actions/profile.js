@@ -48,8 +48,9 @@ export const createProfile = (formData, history, edit = false) => async (
 		if (!edit) {
 			history.push('/dashboard');
 		}
-	} catch (error) {
-		const errors = error.response.data.errors;
+	} catch (err) {
+		console.log('reaching catch');
+		const errors = err.response.data.errors;
 
 		if (errors) {
 			errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
@@ -57,8 +58,8 @@ export const createProfile = (formData, history, edit = false) => async (
 		dispatch({
 			type: PROFILE_ERROR,
 			payload: {
-				msg: error.response.statusText,
-				status: error.response.status,
+				msg: err.response.statusText,
+				status: err.response.status,
 			},
 		});
 	}

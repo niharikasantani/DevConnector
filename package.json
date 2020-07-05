@@ -5,7 +5,7 @@
 	"main": "server.js",
 	"scripts": {
 		"start": "npm server",
-		"server": "nodemon server",
+		"server": "nodemon server -i client",
 		"client": "npm start --prefix client",
 		"dev": "concurrently \"npm run server\" \"npm run client\""
 	},
@@ -20,6 +20,7 @@
 		"gravatar": "^1.8.0",
 		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^5.9.18",
+		"normalize-url": "^5.0.0",
 		"request": "^2.88.2"
 	},
 	"devDependencies": {
