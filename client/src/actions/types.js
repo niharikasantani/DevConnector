@@ -23,3 +23,6 @@ export const PROFILE_ERROR = 'PROFILE_ERROR';
 
 //clear profile
 export const CLEAR_PROFILE = 'CLEAR_PROFILE';
+
+//add edu and exp
+export const UPDATE_PROFILE = 'UPDATE_PROFILE';
