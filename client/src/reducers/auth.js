@@ -48,12 +48,6 @@ export default function (state = initialState, action) {
 				loading: false,
 				user: payload,
 			};
-		case GET_REPOS:
-			return {
-				...state,
-				repos: payload,
-				loading: false,
-			};
 		default:
 			return state;
 	}
