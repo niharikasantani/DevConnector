@@ -7,6 +7,7 @@ import {
 	LOGIN_SUCCESS,
 	LOGOUT,
 	ACCOUNT_DELETED,
+	GET_REPOS,
 } from '../actions/types';
 
 const initialState = {
@@ -46,6 +47,12 @@ export default function (state = initialState, action) {
 				isAuthenticated: true,
 				loading: false,
 				user: payload,
+			};
+		case GET_REPOS:
+			return {
+				...state,
+				repos: payload,
+				loading: false,
 			};
 		default:
 			return state;
