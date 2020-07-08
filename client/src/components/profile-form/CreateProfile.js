@@ -1,10 +1,15 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { createProfile } from '../../actions/profile';
-import { Link, withRouter } from 'react-router-dom';
+import { createProfile, getCurrentProfile } from '../../actions/profile';
+import { Link, withRouter, Redirect } from 'react-router-dom';
 
-const CreateProfile = ({ createProfile, history }) => {
+const CreateProfile = ({
+	createProfile,
+	getCurrentProfile,
+	history,
+	profile: { profile, loading },
+}) => {
 	const [formData, setFormData] = useState({
 		company: '',
 		website: '',
@@ -44,8 +49,13 @@ const CreateProfile = ({ createProfile, history }) => {
 		e.preventDefault();
 		createProfile(formData, history);
 	};
+	useEffect(() => {
+		getCurrentProfile();
+	}, [getCurrentProfile]);
 
-	return (
+	return loading && profile === null ? (
+		<Redirect to='/dashboard' />
+	) : (
 		<Fragment>
 			<h1 className='large text-primary'>Create Your Profile</h1>
 			<p className='lead'>
@@ -226,9 +236,9 @@ const CreateProfile = ({ createProfile, history }) => {
 					</Fragment>
 				)}
 				<input type='submit' className='btn btn-primary my-1' />
-				<a className='btn btn-light my-1' href='dashboard.html'>
+				<Link className='btn btn-light my-1' to='/dashboard'>
 					Go Back
-				</a>
+				</Link>
 			</form>
 		</Fragment>
 	);
@@ -236,6 +246,13 @@ const CreateProfile = ({ createProfile, history }) => {
 
 CreateProfile.propTypes = {
 	createProfile: PropTypes.func.isRequired,
+	getCurrentProfile: PropTypes.func.isRequired,
+	profile: PropTypes.object.isRequired,
 };
+const mapStateToProps = (state) => ({
+	profile: state.profile,
+});
 
-export default connect(null, { createProfile })(withRouter(CreateProfile));
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
+	withRouter(CreateProfile)
+);

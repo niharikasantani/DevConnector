@@ -12,6 +12,25 @@ import {
 import { setAlert } from './alert';
 import setAuthToken from '../utils/setAuthToken';
 
+//Load User
+
+export const loadUser = () => async (dispatch) => {
+	if (localStorage.token) {
+		setAuthToken(localStorage.token);
+	}
+	try {
+		const res = await axios.get('/api/auth');
+		dispatch({
+			type: USER_LOADED,
+			payload: res.data,
+		});
+	} catch (error) {
+		dispatch({
+			type: AUTH_ERROR,
+		});
+	}
+};
+
 //Register user
 export const register = ({ name, email, password }) => async (dispatch) => {
 	// the following code is done without redux in Register.js in comments
@@ -38,25 +57,6 @@ export const register = ({ name, email, password }) => async (dispatch) => {
 			errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
 		}
 		dispatch({ type: REGISTER_FAIL });
-	}
-};
-
-//Load User
-
-export const loadUser = () => async (dispatch) => {
-	if (localStorage.token) {
-		setAuthToken(localStorage.token);
-	}
-	try {
-		const res = await axios.get('/api/auth');
-		dispatch({
-			type: USER_LOADED,
-			payload: res.data,
-		});
-	} catch (error) {
-		dispatch({
-			type: AUTH_ERROR,
-		});
 	}
 };
 

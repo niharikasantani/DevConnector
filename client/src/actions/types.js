@@ -26,3 +26,6 @@ export const CLEAR_PROFILE = 'CLEAR_PROFILE';
 
 //add edu and exp
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
+
+//delete account
+export const ACCOUNT_DELETED = 'ACCOUNT_DELETED';

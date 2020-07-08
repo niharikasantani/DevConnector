@@ -6,6 +6,7 @@ const user = require('../../models/User');
 const { check, validationResult } = require('express-validator');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Post = require('../../models/Posts');
 const request = require('request');
 const config = require('config');
 const axios = require('axios');
@@ -129,8 +130,8 @@ router.post(
 			let profile = await Profile.findOneAndUpdate(
 				{ user: req.user.id },
 				{ $set: profileFields },
-				{ new: true, upsert: true },
-				{ useFindAndModify: false }
+				{ new: true, upsert: true }
+				//{ useFindAndModify: false }
 			);
 
 			res.json(profile);
@@ -166,7 +167,7 @@ router.get('/user/:user_id', async (req, res) => {
 	try {
 		const profile = await Profile.findOne({
 			user: req.params.user_id,
-		}).populate('user', ['name', 'gravatar']);
+		}).populate('user', ['name', 'avatar']);
 
 		if (!profile) {
 			return res
@@ -193,15 +194,19 @@ router.get('/user/:user_id', async (req, res) => {
 router.delete('/', auth, async (req, res) => {
 	try {
 		// @todo: remove user's posts
+		// remove posts
+		await Post.deleteMany({
+			user: req.user.id,
+		});
 		//remove profile
 		await Profile.findOneAndRemove(
-			{ user: req.user.id },
-			{ useFindAndModify: false }
+			{ user: req.user.id }
+			//	{ useFindAndModify: false }
 		);
 		//remove user
 		await User.findOneAndRemove(
-			{ _id: req.user.id },
-			{ useFindAndModify: false }
+			{ _id: req.user.id }
+			//	{ useFindAndModify: false }
 		);
 
 		res.json({ msg: 'User deleted' });
@@ -272,25 +277,23 @@ router.put(
 
 router.delete('/experience/:exp_id', auth, async (req, res) => {
 	try {
-		const profile = await Profile.findOne({ user: req.user.id });
+		const foundProfile = await Profile.findOne({ user: req.user.id });
 
 		//Get the index of the experience to remove
 
-		const removeIndex = profile.experience
-			.map((item) => item.id)
-			.indexOf(req.params.exp_id);
+		foundProfile.experience = foundProfile.experience.filter(
+			(exp) => exp._id.toString() !== req.params.exp_id
+		);
 
-		profile.experience.splice(removeIndex, 1);
-
-		await profile.save();
-		res.json(profile);
+		await foundProfile.save();
+		return res.status(200).json(foundProfile);
 	} catch (error) {
 		console.error(error.message);
-		res.status(500).send('Server error');
+		return res.status(500).json({ msg: 'Server error' });
 	}
 });
 
-// @route   PUT api/profile/edud\cation
+// @route   PUT api/profile/education
 // @desc    Add profile education
 // @access  Private
 
@@ -346,27 +349,46 @@ router.put(
 	}
 );
 
-// @route   DELETE api/profile/education/:exp_id
+// @route   DELETE api/profile/education/:edu_id
 // @desc    Delete education from profile
 // @access  Private
 
+// router.delete('/education/:edu_id', auth, async (req, res) => {
+// 	try {
+// 		const profile = await Profile.findOne({ user: req.user.id });
+
+// 		//Get the index of the education to remove
+
+// 		const removeIndex = profile.education
+// 			.map((item) => item.id)
+// 			.indexOf(req.params.edu_id);
+
+// 		profile.education.splice(removeIndex, 1);
+
+// 		await profile.save();
+// 		res.json(profile);
+// 	} catch (error) {
+// 		console.error(error.message);
+// 		res.status(500).send('Server error');
+// 	}
+// });
+
 router.delete('/education/:edu_id', auth, async (req, res) => {
 	try {
-		const profile = await Profile.findOne({ user: req.user.id });
+		const foundProfile = await Profile.findOne({ user: req.user.id });
+		const eduIds = foundProfile.education.map((edu) => edu._id.toString());
 
-		//Get the index of the education to remove
-
-		const removeIndex = profile.education
-			.map((item) => item.id)
-			.indexOf(req.params.exp_id);
-
-		profile.education.splice(removeIndex, 1);
-
-		await profile.save();
-		res.json(profile);
+		const removeIndex = eduIds.indexOf(req.params.edu_id);
+		if (removeIndex === -1) {
+			return res.status(500).json({ msg: 'Server error' });
+		} else {
+			foundProfile.education.splice(removeIndex, 1);
+			await foundProfile.save();
+			return res.status(200).json(foundProfile);
+		}
 	} catch (error) {
-		console.error(error.message);
-		res.status(500).send('Server error');
+		console.error(error);
+		return res.status(500).json({ msg: 'Server error' });
 	}
 });
 
