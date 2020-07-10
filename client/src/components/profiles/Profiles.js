@@ -29,7 +29,7 @@ const Profiles = ({ getProfiles, profile: { profiles, loading } }) => {
 								/>
 							))
 						) : (
-							<h4>No profiles found</h4>
+							<h4>{''}</h4>
 						)}
 					</div>
 				</Fragment>
