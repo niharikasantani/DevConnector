@@ -136,8 +136,8 @@ router.put('/like/:id', auth, async (req, res) => {
 		//Check if the post has already been liked by that user
 
 		if (
-			post.likes.filter((like) => like.user.toString() === req.user.id).length >
-			0
+			post.likes.filter((like) => like.user.toString() === req.user.id)
+				.length > 0
 		) {
 			return res.status(400).json({ msg: 'Post already liked' });
 		}
@@ -165,7 +165,9 @@ router.put('/unlike/:id', auth, async (req, res) => {
 			post.likes.filter((like) => like.user.toString() === req.user.id)
 				.length === 0
 		) {
-			return res.status(400).json({ msg: 'Post has not yet been not liked' });
+			return res
+				.status(400)
+				.json({ msg: 'Post has not yet been not liked' });
 		}
 
 		// get remove index
@@ -212,7 +214,7 @@ router.post(
 			post.comments.unshift(newComment);
 			await post.save();
 
-			res.json(post);
+			res.json(post.comments);
 		} catch (error) {
 			console.error(error.message);
 			res.status(500).send('Server error');

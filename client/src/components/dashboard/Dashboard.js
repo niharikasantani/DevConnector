@@ -12,7 +12,7 @@ const Dashboard = ({
 	getCurrentProfile,
 	deleteAccount,
 	auth: { user },
-	profile: { profile, loading },
+	profile: { profile, loading, experience, education },
 }) => {
 	useEffect(() => {
 		getCurrentProfile();
@@ -28,7 +28,9 @@ const Dashboard = ({
 			{profile !== null ? (
 				<Fragment>
 					<DashboardActions />
+
 					<Experience experience={profile.experience} />
+
 					<Education education={profile.education} />
 
 					<div className='my-2'>

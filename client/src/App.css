@@ -287,7 +287,9 @@ button {
 .form .social-input i.fa-linkedin {
 	color: #0077b5;
 }
-
+.table {
+	table-layout: fixed;
+}
 .table th,
 .table td {
 	padding: 1rem;
@@ -574,7 +576,4 @@ button {
 	.post button {
 		padding: 0.3rem 0.4rem;
 	}
-}
-.table {
-	table-layout: fixed;
 }
