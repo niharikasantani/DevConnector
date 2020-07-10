@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import Register from '../auth/Register';
 import Login from '../auth/Login';
 import Alert from '../layout/Alert';
@@ -15,7 +15,7 @@ import Post from '../post/Post';
 import NotFound from '../layout/NotFound';
 import PrivateRoute from '../routing/PrivateRoute';
 
-export const Routes = () => {
+const Routes = () => {
 	return (
 		<section className='container'>
 			<Alert />
@@ -52,3 +52,5 @@ export const Routes = () => {
 		</section>
 	);
 };
+
+export default Routes;
