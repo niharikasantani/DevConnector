@@ -7,7 +7,6 @@ import {
 	LOGIN_SUCCESS,
 	LOGOUT,
 	ACCOUNT_DELETED,
-	GET_REPOS,
 } from '../actions/types';
 
 const initialState = {
