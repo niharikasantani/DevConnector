@@ -96,6 +96,7 @@ const EditProfile = ({
 						<option value='Senior Developer'>
 							Senior Developer
 						</option>
+						<option value='QA/Tester'>QA/Tester</option>
 						<option value='Manager'>Manager</option>
 						<option value='Student or Learning'>
 							Student or Learning
